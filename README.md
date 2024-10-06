@@ -72,22 +72,23 @@ The primary goal of this project is to learn how to deploy web applications on W
 2. Move both directories modules, `client` and `server` to the newly created `/sites` directory
 4. Install the dependencies on each module with `npm install`
 5. On the `client` module compile the code with `npm run build`
-6. Open the IIS software and add new sites per each module
+6. Move the `web.config` file inside the `/client/dist` directory to fix page reload errors
+7. Open the IIS software and add new sites per each module
    - For the `client` choose the following physical path: `C:/sites/client/dist`
    - For the `server` choose the following physical path: `C:/sites/server`
    - Other futher configurations are optional
-7. Go to your root directory on the IIS and check your machine name
-8. Then open the `Feature Delegation` panel and change the delegation of `Handler Mapppings` to `Read/Write`
-9. Navigate to `Application Pools` section on the sidebar and change the `client` module `.NET CLR Version` to `No Managed Code`
-10. Finally, go to the `server` module and select the `Handler Mapping` option and check if `ìisnode` handler is set, if not follow these extra steps:
+8. Go to your root directory on the IIS and check your machine name
+9. Then open the `Feature Delegation` panel and change the delegation of `Handler Mapppings` to `Read/Write`
+10. Navigate to `Application Pools` section on the sidebar and change the `client` module `.NET CLR Version` to `No Managed Code`
+11. Finally, go to the `server` module and select the `Handler Mapping` option and check if `ìisnode` handler is set, if not follow these extra steps:
    - On the right actions panel select `Module Mapping`
    - Fill parameters with the following information
      - Request path: `index.js` (server's main file)
      - Module: `iisnode`
      - Executable: empty
      - Name: `iisnode`
-11. Open the `client` module on any code editor and create a `.env` file with the same content as the provided `.env.example` file
+12. Open the `client` module on any code editor and create a `.env` file with the same content as the provided `.env.example` file
     - Specify the URL according to your machine name.
       - `VITE_API_BASE_URL=http://YOUR_MACHINE_NAME:YOUR_SELECTED_PORT_FOR_THE_SERVER/api`
       - `VITE_MEDIA_SERVER_URL=http://YOUR_MACHINE_NAME:YOUR_SELECTED_PORT_FOR_THE_SERVER`
-12. Start both modules on IIS and navigate to their ports
+13. Start both modules on IIS and navigate to their ports
