@@ -19,6 +19,10 @@ app.use((req, res, next) => {
 app.use('/api', upload_router);
 app.use('/api', media_router);
 
+app.get(['/', '/api'], (req, res) => {
+    res.status(200).json({ message: 'Hello world!' })
+});
+
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
