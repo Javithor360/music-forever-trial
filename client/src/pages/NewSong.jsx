@@ -1,3 +1,4 @@
+// client/src/pages/NewSong.jsx
 import React from 'react';
 import axios from 'axios';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -5,38 +6,34 @@ import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
+// Form validation with messages to display (FILE EXTENSIONS ARE CHECKED ON THE SERVER)
 const validationSchema = Yup.object().shape({
-    songName: Yup.string().required('El nombre de la canción es requerido'),
-    audioFile: Yup.mixed().required('La pista de audio es requerida'),
-    songCover: Yup.mixed().required('La portada de la canción es requerida') // New field validation
+    songName: Yup.string().required('Song name is required'),
+    audioFile: Yup.mixed().required('Audio track is required'),
+    songCover: Yup.mixed().required('Album cover is required')
 });
 
-const url = `${import.meta.env.VITE_API_BASE_URL}/upload`;
-
 const NewSong = () => {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/upload`;
+    
     const handleSubmit = async (values, { setSubmitting }) => {
         try {
+            // Building a FormData object with the provided form data
             const formData = new FormData();
             formData.append('songName', values.songName);
-            formData.append('audioFile', values.audioFile); // Ensure this matches the server
-            formData.append('songCover', values.songCover); // Ensure this matches the server
+            formData.append('audioFile', values.audioFile);
+            formData.append('songCover', values.songCover);
     
-            // Log the form data to check its contents
-            console.log("Form Data:", formData.get('songName'), formData.get('audioFile'), formData.get('songCover'));
-    
+            // Sending the request to the server
             const res = await axios.post(url, formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data' // Since we're working with files, it's mandatory to define the content as form-data
                 }
             });
     
-            // Show success toast with server message
-            toast.success(res.data.message || 'Canción subida con éxito!');
-            console.log(res);
+            toast.success(res.data.message || 'Successfully uploaded song!');
         } catch (error) {
-            // Show error toast with server message if available
-            toast.error(error.response?.data?.message || 'Error al subir la canción. Inténtalo de nuevo.');
-            console.error(error);
+            toast.error(error.response?.data?.message || 'Unexpected error. Try again later.');
         } finally {
             setSubmitting(false);
         }
@@ -44,17 +41,17 @@ const NewSong = () => {
 
     return (
         <div className="container p-4 mx-auto">
-            <p className="mb-4 text-2xl font-bold">Subir Canción</p>
+            <p className="mb-4 text-2xl font-bold">Upload a new song</p>
             <Formik
-                initialValues={{ songName: '', audioFile: null, songCover: null }} // Add songCover to initialValues
+                initialValues={{ songName: '', audioFile: null, songCover: null }}
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ isSubmitting, setFieldValue }) => (
+                {({ isSubmitting, setFieldValue, values }) => (
                     <Form className="space-y-4">
                         <div>
                             <label htmlFor="songName" className="label">
-                                <span className="label-text">Nombre de la canción</span>
+                                <span className="label-text">Song name</span>
                             </label>
                             <Field
                                 type="text"
@@ -66,7 +63,7 @@ const NewSong = () => {
 
                         <div>
                             <label htmlFor="audioFile" className="label">
-                                <span className="label-text">Pista de audio de la canción</span>
+                                <span className="label-text">Audio track</span>
                             </label>
                             <input
                                 type="file"
@@ -74,8 +71,10 @@ const NewSong = () => {
                                 accept="audio/*"
                                 onChange={(event) => {
                                     const file = event.currentTarget.files[0];
-                                    console.log("Selected audio file:", file); // Log the selected file
                                     setFieldValue("audioFile", file);
+                                    if (!values.songName) {
+                                        setFieldValue("songName", file.name.split('.')[0]);
+                                    }
                                 }}
                                 className="w-full file-input file-input-bordered"
                             />
@@ -84,7 +83,7 @@ const NewSong = () => {
 
                         <div>
                             <label htmlFor="songCover" className="label">
-                                <span className="label-text">Portada de la canción</span>
+                                <span className="label-text">Album cover</span>
                             </label>
                             <input
                                 type="file"
@@ -92,7 +91,6 @@ const NewSong = () => {
                                 accept="image/*"
                                 onChange={(event) => {
                                     const file = event.currentTarget.files[0];
-                                    console.log("Selected cover file:", file); // Log the selected cover
                                     setFieldValue("songCover", file);
                                 }}
                                 className="w-full file-input file-input-bordered"
@@ -106,13 +104,13 @@ const NewSong = () => {
                                 disabled={isSubmitting}
                                 className="btn btn-primary"
                             >
-                                Enviar
+                                Save
                             </button>
                             <Link
                                 to="/library"
                                 className='btn btn-secondary'
                             >
-                                Volver
+                                Back
                             </Link>
                         </div>
                     </Form>
