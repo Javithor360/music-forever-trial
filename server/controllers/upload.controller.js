@@ -1,6 +1,3 @@
-// src/controllers/upload.controller.js
-import generateRandomString from '../utils/randomStringGenerator.js';
-
 export const uploadFiles = (req, res) => {
     // Check if files are received
     if (!req.files.audioFile || !req.files.songCover) {

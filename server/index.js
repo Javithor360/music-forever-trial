@@ -1,10 +1,12 @@
 import express from 'express';
 import upload_router from './routes/upload.routes.js';
+import media_router from './routes/media.routes.js';
 
 const app = express();
 
 // Middleware to parse URL-encoded data
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static('uploads'));
 
 // CORS middleware
 app.use((req, res, next) => {
@@ -15,6 +17,7 @@ app.use((req, res, next) => {
 
 // Use the upload routes
 app.use('/api', upload_router);
+app.use('/api', media_router);
 
 const port = process.env.PORT || 3000;
 
